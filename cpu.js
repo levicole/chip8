@@ -7,22 +7,22 @@ var CPU = function() {
   this.dt     = 0;
   this.st     = 0;
   this.keys = {
-    0x1: 0,
-    0x2: 0,
-    0x3: 0,
-    0xC: 0,
-    0x4: 0,
-    0x5: 0,
-    0x6: 0,
-    0xD: 0,
-    0x7: 0,
-    0x8: 0,
-    0x9: 0,
-    0xE: 0,
-    0xA: 0,
-    0x0: 0,
-    0xB: 0,
-    0xF: 0
+    0x1: false,
+    0x2: false,
+    0x3: false,
+    0xC: false,
+    0x4: false,
+    0x5: false,
+    0x6: false,
+    0xD: false,
+    0x7: false,
+    0x8: false,
+    0x9: false,
+    0xE: false,
+    0xA: false,
+    0x0: false,
+    0xB: false,
+    0xF: false
   }
 
   this.screen = {clearScreen: function(){}}
@@ -70,10 +70,10 @@ var CPU = function() {
   }
 
   this.cycle = function(){
-    // for(var i = 0; i <= 5; i++){
+    for(var i = 0; i <= 3; i++){
       var opcode = (this.memory[this.pc] << 8) | this.memory[this.pc + 1];
       this.perform(opcode);
-    // }
+    }
 
     if(this.dt > 0) this.dt -= 1;
     if(this.st > 0) this.st -= 1;
@@ -299,20 +299,20 @@ var CPU = function() {
       this.pc += 2;
   }
 
-  // 0xEx9E - skip the next opcode if the key in Vx isn't pressed
+  // 0xEx9E - skip the next opcode if the key in Vx is pressed
   this.SKP = function(opcode){
     var key = this.v[(opcode & 0x0F00) >> 8];
-    if(this.keys[key] !== 0){
+    if(this.keys[key]){
       this.pc += 4;
     } else {
       this.pc += 2;
     }
   }
 
-  // 0xExA1 - skip the next opcode if the key in Vx is pressed
+  // 0xExA1 - skip the next opcode if the key in Vx isn't pressed
   this.SKNP = function(opcode){
     var key = this.v[(opcode & 0x0F00) >> 8];
-    if(this.keys[key] === 0){
+    if(!this.keys[key]){
       this.pc += 4;
     } else {
       this.pc += 2;

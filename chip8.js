@@ -1,4 +1,23 @@
 var Chip8 = function(){
+  MAPPING = {
+      "1": 0x1,
+      "2": 0x2,
+      "3": 0x3,
+      "4": 0xC,
+      "Q": 0x4,
+      "W": 0x5,
+      "E": 0x6,
+      "R": 0xD,
+      "A": 0x7,
+      "S": 0x8,
+      "D": 0x9,
+      "F": 0xE,
+      "Z": 0xA,
+      "X": 0x0,
+      "C": 0xB,
+      "V": 0xF
+    }
+
   var loop,
       cpu = new CPU(),
       screen = new Screen("screen", 6);
@@ -37,6 +56,19 @@ var Chip8 = function(){
     cpu.paused = true;
   }
 
+
+  window.addEventListener("keydown", function(event){
+    var key  = String.fromCharCode(event.which),
+        code = MAPPING[key];
+    cpu.keys[code] = true;
+  });
+
+  window.addEventListener("keyup", function(event){
+    var key  = String.fromCharCode(event.which),
+        code = MAPPING[key];
+
+    cpu.keys[code] = false;
+  });
 }
 
 var Screen = function(canvasId, scale){
@@ -70,6 +102,7 @@ var Screen = function(canvasId, scale){
     }
   }
 }
+
 
 var ch8;
 document.addEventListener("DOMContentLoaded", function(){
