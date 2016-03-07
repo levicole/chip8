@@ -19,13 +19,16 @@ var Chip8 = function(){
     }
 
   var loop,
+      self = this,
       cpu = new CPU(),
-      screen = new Screen("screen", 6);
+      screen = new Screen("screen", 6),
+      romSelector = document.getElementById("romSelector");
 
   this.cpu = cpu;
-  this.loadRom = function(path) {
+  this.loadRom = function(romName) {
     var self = this;
     var xhr = new XMLHttpRequest();
+    var path = "roms/" + romName;
     xhr.open("GET", path, true);
     xhr.responseType = "arraybuffer";
 
@@ -37,6 +40,23 @@ var Chip8 = function(){
       self.start();
     }
     xhr.send();
+  }
+
+  this.romify = function(){
+    var roms = [
+      "PUZZLE", "BLINKY", "BLITZ", "BRIX",
+      "CONNECT4", "GUESS", "HIDDEN", "INVADERS",
+      "KALEID", "MAZE", "MERLIN", "MISSILE",
+      "PONG", "PONG2", "PUZZLE", "SYZYGY",
+      "TANK", "TETRIS", "TICTAC", "UFO",
+      "VBRIX", "VERS", "WIPEOFF"];
+
+    for(var i = 0; i < roms.length; i++){
+      var rom = document.createElement("option");
+      rom.value = roms[i];
+      rom.appendChild(document.createTextNode(roms[i]));
+      romSelector.appendChild(rom);
+    }
   }
 
   var step = function(){
@@ -61,6 +81,7 @@ var Chip8 = function(){
     var key  = String.fromCharCode(event.which),
         code = MAPPING[key];
     cpu.keys[code] = true;
+    cpu.keyWasPressed = true;
   });
 
   window.addEventListener("keyup", function(event){
@@ -68,6 +89,12 @@ var Chip8 = function(){
         code = MAPPING[key];
 
     cpu.keys[code] = false;
+  });
+
+  romSelector.addEventListener("change", function(e){
+    self.loadRom(romSelector.value);
+    romSelector.blur();
+    document.body.focus();
   });
 }
 
@@ -104,8 +131,7 @@ var Screen = function(canvasId, scale){
 }
 
 
-var ch8;
+var ch8 = new Chip8();
 document.addEventListener("DOMContentLoaded", function(){
-  ch8 = new Chip8();
-  ch8.loadRom("/roms/UFO");
+  ch8.romify();
 });

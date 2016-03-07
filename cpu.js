@@ -6,6 +6,7 @@ var CPU = function() {
   this.i      = 0;
   this.dt     = 0;
   this.st     = 0;
+  this.keyWasPressed = true;
   this.keys = {
     0x1: false,
     0x2: false,
@@ -70,7 +71,7 @@ var CPU = function() {
   }
 
   this.cycle = function(){
-    for(var i = 0; i <= 3; i++){
+    for(var i = 0; i <= 2; i++){
       var opcode = (this.memory[this.pc] << 8) | this.memory[this.pc + 1];
       this.perform(opcode);
     }
@@ -338,9 +339,12 @@ var CPU = function() {
 
   // Fx0A - LD Vx, K
   this.LD_vx_k = function(opcode){
-    var key = this.v[(opcode & 0x0F00) >> 8];
-    if(this.keys[key] == 1) {
-      this.pc += 2;
+    for(propery in this.keys){
+      if(this.keys[propery]) {
+        this.v[(opcode & 0x0F00) >> 8] = property;
+        this.pc += 2;
+        break;
+      }
     }
   }
 
